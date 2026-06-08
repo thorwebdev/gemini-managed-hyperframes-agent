@@ -40,6 +40,7 @@ else
   echo "Installed $(ls /.agents/skills/ 2>/dev/null | wc -l) skills"
 fi
 
+
 # --------------------------------------------------------------------------
 # 2. Pre-download GSAP for offline use
 #    Headless Chrome rejects CDN TLS certs (mitmproxy), so compositions

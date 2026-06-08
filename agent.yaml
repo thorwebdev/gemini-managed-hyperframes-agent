@@ -1,0 +1,12 @@
+id: hyperframes-video-agent
+base_agent: antigravity-preview-05-2026
+description: A premium video agent specialized in layout-before-animation HTML/CSS/GSAP video compositions.
+tools:
+  - type: code_execution
+  - type: google_search
+environment:
+  type: "remote"
+  sources: []
+  network:
+    allowlist:
+      - domain: "*"

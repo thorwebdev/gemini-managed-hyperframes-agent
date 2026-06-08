@@ -338,6 +338,8 @@ Google Fonts are not available via CDN in this sandbox (TLS interception). Embed
 | npm proxy/TLS | `NODE_TLS_REJECT_UNAUTHORIZED=0` is set. Use `npm install -g` for new packages |
 | File server 404 for `/workspace/` paths | Create symlink: `ln -sf /workspace <project>/workspace` |
 | 300s command timeout | Keep commands short. Don't combine long installs in a single invocation |
+| On-device TTS / speech synthesis | BANNED. The sandbox lacks CPU/memory resources for local ONNX TTS. Design silent videos only. |
+
 
 ---
 
