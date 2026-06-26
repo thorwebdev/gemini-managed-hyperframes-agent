@@ -43,6 +43,27 @@ echo 'export HYPERFRAMES_BROWSER_PATH=/usr/bin/chrome-headless-shell' > /etc/pro
 echo 'HYPERFRAMES_BROWSER_PATH=/usr/bin/chrome-headless-shell' >> /etc/environment 2>/dev/null || true
 echo 'export HYPERFRAMES_BROWSER_PATH=/usr/bin/chrome-headless-shell' >> ~/.bashrc 2>/dev/null || true
 
+# Bulletproof Workaround: Wrap the binaries system-wide since non-interactive shells
+# do not read profile or rc files.
+wrap_binary() {
+  local name="$1"
+  local binary_path
+  binary_path=$(which "$name" 2>/dev/null)
+  if [ -n "$binary_path" ] && [ ! -f "${binary_path}-real" ]; then
+    echo "Creating environment-injected wrapper for $name at $binary_path"
+    mv "$binary_path" "${binary_path}-real"
+    cat << EOF > "$binary_path"
+#!/bin/bash
+export HYPERFRAMES_BROWSER_PATH=/usr/bin/chrome-headless-shell
+exec "\$(dirname "\$0")/${name}-real" "\$@"
+EOF
+    chmod +x "$binary_path"
+  fi
+}
+
+wrap_binary "npx"
+wrap_binary "npm"
+
 # --------------------------------------------------------------------------
 # 2. Install hyperframes CLI
 #    Uses --ignore-scripts to skip onnxruntime-node postinstall (which fails
@@ -68,9 +89,12 @@ else
       NODE_TLS_REJECT_UNAUTHORIZED=0 \
       node ./script/install 2>/dev/null || echo "  (onnxruntime-node install warning — non-fatal)"
   fi
-
-  echo "hyperframes: $(hyperframes --help 2>&1 | head -n 1)"
 fi
+
+# Wrap the installed hyperframes CLI
+wrap_binary "hyperframes"
+
+echo "hyperframes wrapper verified: $(hyperframes --help 2>&1 | head -n 1)"
 
 echo ""
 echo "=== Part 2/3 Done ==="
